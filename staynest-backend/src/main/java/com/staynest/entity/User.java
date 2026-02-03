@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class User {
     @Column(name = "created_at",nullable = false,updatable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedBy
+    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -95,7 +96,7 @@ public class User {
     }
 
     //check user has a guest role
-    public boolean isGuest(){
+    public boolean isGuestOrHost    (){
         return role == UserRole.GUEST || role == UserRole.HOST;
     }
 

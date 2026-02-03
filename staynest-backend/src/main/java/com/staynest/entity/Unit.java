@@ -43,8 +43,8 @@ public class Unit {
     @Column(name = "bathrooms",nullable = false,precision = 3,scale = 1)
     private BigDecimal bathrooms;
 
-    @Column(name = "max_guest",nullable = false)
-    private Integer maxGuest;
+    @Column(name = "max_guests",nullable = false)
+    private Integer maxGuests;
 
     @Column(name = "square_feet")
     private Integer squareFeet;
@@ -103,7 +103,7 @@ public class Unit {
 
     //check if unit can accommodate the given number of guests
     public boolean canAccommodate(int guests){
-        return guests > 0 && guests <= maxGuest;
+        return guests > 0 && guests <= maxGuests;
     }
 
 

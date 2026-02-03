@@ -1,4 +1,36 @@
 package com.staynest.repository;
 
-public interface WishlistRepository {
+import com.staynest.entity.Wishlist;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface WishlistRepository extends JpaRepository<Wishlist, UUID> {
+    //Find all wishlists for a user
+    List<Wishlist> findByUser_UserId(UUID userId);
+
+    //Check if user have already saved a property
+    boolean existsByUser_UserIdAndProperty_PropertyId(
+            UUID userId,
+            UUID PropertyId
+    );
+
+    //Find specific wishlist entry
+    Optional<Wishlist> findByUser_UserIdAndProperty_PropertyId(
+            UUID userId,
+            UUID PropertyId
+    );
+
+    //Count How many users saved a property(popularity matric)
+    long countByProperty_PropertyId(UUID PropertyId);
+
+    //Delete wishlist entry
+    void deleteByUser_UserIdAndProperty_PropertyId(
+            UUID userId,
+            UUID propertyId
+    );
 }

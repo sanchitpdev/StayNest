@@ -63,7 +63,7 @@ public class Property {
     private BigDecimal latitude;
 
     @Column(name = "longitude",precision = 11,scale=8)
-    private String longitude;
+    private BigDecimal longitude;
 
     //Json fields(amenities)
     @Type(JsonType.class)
