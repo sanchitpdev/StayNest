@@ -90,7 +90,7 @@ public class Booking {
         return ChronoUnit.DAYS.between(checkInDate,checkOutDate);
     }
 
-    //Check booking can be cancelled
+    //Check booking can be canceled
     public boolean canBeCancelled(){
         return bookingStatus != BookingStatus.CANCELLED && bookingStatus != BookingStatus.COMPLETED;
     }
