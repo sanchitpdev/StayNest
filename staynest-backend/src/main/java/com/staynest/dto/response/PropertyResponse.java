@@ -8,23 +8,25 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-/**
- * DTO for property creation response
- * Returned immediately after a property
+/**'
+ * DTO for property response
+ * Returned when retrieved property details
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PropertyCreateResponse {
+public class PropertyResponse {
 
     private String propertyId;
     private String propertyName;
     private String description;
     private PropertyType propertyType;
+
+    //Address
     private String address;
     private String city;
     private String state;
@@ -32,7 +34,25 @@ public class PropertyCreateResponse {
     private String postalCode;
     private BigDecimal latitude;
     private BigDecimal longitude;
+
+    //Amenities
     private Map<String, Object> amenities;
+
+    //Host Information
     private String hostId;
+    private String hostName;
+    private String hostEmail;
+
+    //Statistics
+    private Integer totalUnits;
+    private Integer availableUnits;
+    private BigDecimal startingPrice;//Lowest Unit price
+
+    //TimeStamps
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    //Optional: List of Units
+    private List<UnitCreateResponse> units;
+
 }

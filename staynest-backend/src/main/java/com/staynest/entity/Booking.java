@@ -33,10 +33,10 @@ public class Booking {
 
     //===========Date Fields=============
     @Column(name = "check_in_date",nullable = false)
-    private LocalDateTime checkInDate;
+    private LocalDate checkInDate;
 
     @Column(name = "check_out_date",nullable = false)
-    private LocalDateTime checkOutDate;
+    private LocalDate checkOutDate;
 
     //=========Guest Info=============
     @Column(name = "num_guests",nullable = false)
@@ -104,17 +104,17 @@ public class Booking {
 
     //check booking dates are overlap with given table
     public  boolean overlaps(LocalDate start,LocalDate end){
-        return !(checkOutDate.isBefore(start.atStartOfDay()) || checkInDate.isAfter(end.atStartOfDay()));
+        return !(checkOutDate.isBefore(start) || checkInDate.isAfter(end));
     }
 
     //Valid Booking Status
     @PrePersist
     @PreUpdate
     private void validDates(){
-        if (checkOutDate.isBefore(checkInDate) || checkOutDate.isEqual(checkOutDate)){
+        if (checkOutDate.isBefore(checkInDate) || checkOutDate.isEqual(checkInDate)){
             throw new IllegalArgumentException("Check-out must be after check-in date");
         }
-        if (checkInDate.isBefore(LocalDate.now().atStartOfDay())){
+        if (checkInDate.isBefore(LocalDate.now())){
             throw new IllegalArgumentException("Check-in date can not be in the past");
         }
     }

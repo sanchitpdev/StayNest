@@ -118,7 +118,7 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-//    public long getJwtExpirationMs(){
-//       return jwtExpirationMs;
-//    }
+    public long getJwtExpirationMs(){
+       return jwtExpirationMs;
+    }
 }

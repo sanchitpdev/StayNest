@@ -1,4 +1,4 @@
 package com.staynest.service;
 
-public class WhishlistService {
+public class WishlistService {
 }
