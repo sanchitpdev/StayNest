@@ -1,5 +1,6 @@
 package com.staynest.repository;
 
+import com.staynest.entity.User;
 import com.staynest.entity.Wishlist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -33,4 +34,6 @@ public interface WishlistRepository extends JpaRepository<Wishlist, UUID> {
             UUID userId,
             UUID propertyId
     );
+
+    UUID user(User user);
 }
