@@ -1,6 +1,8 @@
 package com.staynest.controller;
 
 import com.staynest.dto.request.PropertyCreateRequest;
+import com.staynest.dto.request.PropertySearchRequest;
+import com.staynest.dto.response.PagedResponse;
 import com.staynest.dto.response.PropertyCreateResponse;
 import com.staynest.dto.response.PropertyResponse;
 import com.staynest.entity.User;
@@ -139,7 +141,6 @@ public class PropertyController {
     /**
      * Delete property
      * Only the property owner can only  delete
-
      * DELETE /api/v1/properties/{propertyId}
      */
 
@@ -151,5 +152,45 @@ public class PropertyController {
 
         propertyService.deleteProperty(propertyId,user.getUserId());
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Get all properties with pagination
+     */
+    @GetMapping("/paginated")
+    public ResponseEntity<PagedResponse<PropertyResponse>> getAllPropertiesPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection){
+        PagedResponse<PropertyResponse> response = propertyService.getAllPropertiesPaginated(
+                page,size,sortBy,sortDirection
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Advanced property search with filters
+     */
+    @PostMapping("/search/advanced")
+    public ResponseEntity<PagedResponse<PropertyResponse>> advancedSearch(
+            @RequestBody PropertySearchRequest searchRequest){
+
+        PagedResponse<PropertyResponse> response = propertyService.advancedSearch(searchRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Search properties by city with pagination
+     */
+    @GetMapping("/search/city")
+    public ResponseEntity<PagedResponse<PropertyResponse>> searchByCityPaginated(
+            @RequestParam String city,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        PagedResponse<PropertyResponse> response = propertyService.searchPropertiesByCityPaginated(
+                city, page, size
+        );
+        return ResponseEntity.ok(response);
     }
 }

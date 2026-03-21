@@ -19,7 +19,7 @@ public interface PropertyImageRepository extends JpaRepository<PropertyImage, UU
     List<PropertyImage> findByUnit_UnitIdOrderByDisplayOrder(UUID unitId);
 
     //Find Primary images for property
-    Optional<PropertyImage> findByProperty_PropertyIdAndIsPrimaryTrue(UUID primaryId);
+    List<PropertyImage> findByProperty_PropertyIdAndIsPrimaryTrue(UUID primaryId);
 
     //Find image by type for a property
     List<PropertyImage> findByProperty_PropertyIdAndImageType(

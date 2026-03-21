@@ -48,4 +48,5 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
             "WHERE r.property.host.userId = :hostId")
     List<Review> findReviewsForHostProperties(@Param("hostId") UUID hostId);
 
+
 }

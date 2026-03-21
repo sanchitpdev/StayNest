@@ -1,6 +1,8 @@
 package com.staynest.service;
 
 import com.staynest.dto.request.PropertyCreateRequest;
+import com.staynest.dto.request.PropertySearchRequest;
+import com.staynest.dto.response.PagedResponse;
 import com.staynest.dto.response.PropertyCreateResponse;
 import com.staynest.dto.response.PropertyResponse;
 import com.staynest.dto.response.UnitCreateResponse;
@@ -12,12 +14,17 @@ import com.staynest.enums.UserRole;
 import com.staynest.exception.ResourceNotFoundException;
 import com.staynest.exception.UnauthorizedException;
 import com.staynest.repository.PropertyRepository;
+import com.staynest.repository.ReviewRepository;
 import com.staynest.repository.UnitRepository;
 import com.staynest.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +49,8 @@ public class PropertyService {
 
     @Autowired
     private UnitRepository unitRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     /**
      * Create a new Property
@@ -269,6 +278,127 @@ public class PropertyService {
         //step 3: Delete property(cascade will delete units)
         propertyRepository.delete(property);
         logger.info("Property {} deleted successfully ",propertyId);
+    }
+
+    /**
+     * Get all properties with pagination
+     * @param page - Page Number (0-based)
+     * @param size - Page Size
+     * @param sortBy - Sort field(e.g, "PropertyName","CreatedAt")
+     * @param sortDirection - Sort Direction ("asc" or "desc")
+     * @return PagedResponse of PropertyResponse
+     */
+    @Transactional(readOnly = true)
+    public PagedResponse<PropertyResponse> getAllPropertiesPaginated(
+            int page, int size,String sortBy, String sortDirection){
+        logger.info("Fetching properties - page: {},size: {}, sortBy: {}",page,size,sortBy);
+
+        //Create sort
+        Sort sort = sortDirection.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        //Create pageable
+        Pageable pageable = PageRequest.of(page,size,sort);
+
+        //Fetch properties
+        Page<Property> propertyPage = propertyRepository.findAll(pageable);
+
+        //Convert to PropertyResponse
+        Page<PropertyResponse> responsePage = propertyPage.map(this::buildPropertyResponse);
+
+        return PagedResponse.of(responsePage);
+    }
+
+    /**
+     * Advanced property search with multiple filters
+     * @param searchRequest - search criteria
+     * @return PagedResponse of PropertyResponse
+     */
+    @Transactional(readOnly = true)
+    public PagedResponse<PropertyResponse> advancedSearch(PropertySearchRequest searchRequest){
+        logger.info("Advanced property search: {}",searchRequest);
+
+        //Create Sort
+        String sortBy = searchRequest.getSortBy() != null ? searchRequest.getSortBy() : "createdAt";
+        String sortDirection = searchRequest.getSortDirection() != null ? searchRequest.getSortDirection() : "desc" ;
+
+        Sort sort = sortDirection.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        //Create pageable
+        Pageable pageable = PageRequest.of(
+                searchRequest.getPageNumber(),
+                searchRequest.getPageSize(),
+                sort
+        );
+
+        //Execute search
+        Page<Property> propertyPage = propertyRepository.searchProperties(
+                searchRequest.getCity(),
+                searchRequest.getState(),
+                searchRequest.getCountry(),
+                searchRequest.getPropertyType(),
+                searchRequest.getMinBedrooms(),
+                searchRequest.getMaxBedrooms(),
+                searchRequest.getMinGuests(),
+                pageable
+        );
+
+        //Filter by price range if specified
+        if (searchRequest.getMinPrice() != null || searchRequest.getMaxPrice() != null){
+            propertyPage = propertyRepository.searchByPriceRange(
+                    searchRequest.getMinPrice(),
+                    searchRequest.getMaxPrice(),
+                    pageable
+            );
+        }
+        //Convert to propertyResponse
+        Page<PropertyResponse> responsePage = propertyPage.map(this::buildPropertyResponse);
+
+        //Filter by rating if specified (post-query filter)
+        if (searchRequest.getMinRating() != null){
+            List<PropertyResponse> filtered = responsePage.getContent().stream()
+                    .filter(p -> {
+                        Double rating = reviewRepository.calculateAverageRating(
+                                UUID.fromString(p.getPropertyId())
+                        );
+                        return rating != null && rating >= searchRequest.getMinRating();
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+
+            return PagedResponse.<PropertyResponse>builder()
+                    .content(filtered)
+                    .page(responsePage.getNumber())
+                    .size(responsePage.getSize())
+                    .totalElements(filtered.size())
+                    .totalPage((int)Math.ceil(filtered.size()/(double)responsePage.getSize()))
+                    .first(responsePage.isFirst())
+                    .last(responsePage.isLast())
+                    .empty(filtered.isEmpty())
+                    .build();
+        }
+        return PagedResponse.of(responsePage);
+    }
+
+    /**
+     * Search properties by city with pagination
+     * @param city - City name
+     * @param page - Page Number
+     * @param size - Page Size
+     * @return PagedResponse of PropertyResponse
+     */
+    @Transactional(readOnly = true)
+    public PagedResponse<PropertyResponse> searchPropertiesByCityPaginated(
+            String city, int page,int size){
+        logger.info("Searching properties in city: {} - page: {}, size: {}",city,page,size);
+
+        Pageable pageable = PageRequest.of(page,size,Sort.by("createdAt").descending());
+        Page<Property> propertyPage = propertyRepository.findByCity(city,pageable);
+        Page<PropertyResponse> responsePage = propertyPage.map(this::buildPropertyResponse);
+
+        return PagedResponse.of(responsePage);
     }
 
     //Helper Method to build PropertyResponse form Property Entity
