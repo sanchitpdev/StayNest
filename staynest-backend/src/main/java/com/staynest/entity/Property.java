@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.staynest.enums.PropertyType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Type;
 import org.hibernate.engine.spi.CascadeStyle;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,6 +27,8 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE properties SET deleted_at = NOW() WHERE property_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Property {
     //=======PRIMARY KEY=============
     @Id
@@ -43,28 +47,32 @@ public class Property {
     @Column(name = "property_type", nullable = false)
     private PropertyType propertyType;
 
-    //=========Address Fields==========
-    @Column(name = "address",nullable = false,length = 500)
-    private String address;
+    //=========Address Fields ==========
+    @Column(name = "address", nullable = false, length = 500)
+    private String streetAddress;          // renamed from 'address' → 'streetAddress'
 
-    @Column(name = "city",nullable = false,length = 100)
+    @Column(name = "city", nullable = false, length = 100)
     private String city;
 
-    @Column(name = "state",nullable = false,length = 100)
+    @Column(name = "state", nullable = false, length = 100)
     private String state;
 
-
-    @Column(name = "country", nullable = false,length = 100)
+    @Column(name = "country", nullable = false, length = 100)
     private String country;
 
-    @Column(name = "postal_code",length = 20)
+    @Column(name = "postal_code", length = 20)
     private String postalCode;
 
-    @Column(name = "latitude",precision = 10,scale = 8)
+    @Column(name = "latitude", precision = 10, scale = 8)
     private BigDecimal latitude;
 
-    @Column(name = "longitude",precision = 11,scale=8)
+    @Column(name = "longitude", precision = 11, scale = 8)
     private BigDecimal longitude;
+
+    // V2 - New normalized address relationship
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
+    private Address address;
 
     //Json fields(amenities)
     @Type(JsonType.class)
@@ -79,6 +87,9 @@ public class Property {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     //======Relationship=========
     //Many properties belongs to one user
@@ -109,10 +120,10 @@ public class Property {
 
     //=======Helper Methods==========
     //Get Full address
-    public String getFullAddress(){
-        return String.format("%s,%s,%s,%s,%s",address,city,state,country,postalCode);
+    public String getFullAddress() {
+        return String.format("%s, %s, %s, %s, %s",
+                streetAddress, city, state, country, postalCode);
     }
-
     //get total number of property in this unit
     public int getTotalUnit(){
         return units != null ? units.size() : 0;

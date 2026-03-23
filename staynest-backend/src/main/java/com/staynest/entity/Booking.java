@@ -3,6 +3,8 @@ package com.staynest.entity;
 import com.staynest.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -24,6 +26,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE bookings SET deleted_at = NOW() WHERE booking_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Booking {
     //===========Primary Key==============
     @Id
@@ -63,6 +67,9 @@ public class Booking {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     //===========Relationship===============
     //Many bookings for one unit

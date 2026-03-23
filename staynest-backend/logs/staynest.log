@@ -5753,3 +5753,141 @@
 2026-03-23 14:41:36 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-03-23 14:41:36 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2026-03-23 14:41:36 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-03-23 16:01:20 [main] INFO  c.staynest.StayNestApplicationTests - Starting StayNestApplicationTests using Java 21.0.10 with PID 115869 (started by sanchit in /home/sanchit/Projects/StayNest_All/StayNest/staynest-backend)
+2026-03-23 16:01:20 [main] DEBUG c.staynest.StayNestApplicationTests - Running with Spring Boot v3.3.5, Spring v6.1.14
+2026-03-23 16:01:20 [main] INFO  c.staynest.StayNestApplicationTests - The following 1 profile is active: "dev"
+2026-03-23 16:01:20 [main] DEBUG o.s.w.c.s.GenericWebApplicationContext - Refreshing org.springframework.web.context.support.GenericWebApplicationContext@27dc79f7
+2026-03-23 16:01:20 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-23 16:01:20 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 41 ms. Found 8 JPA repository interfaces.
+2026-03-23 16:01:21 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-23 16:01:21 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-03-23 16:01:21 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-03-23 16:01:21 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-23 16:01:21 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3386ed8
+2026-03-23 16:01:21 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-23 16:01:21 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-23 16:01:21 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-23 16:01:22 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    create table addresses (
+        address_id uuid not null,
+        city varchar(100) not null,
+        country varchar(100) not null,
+        created_at timestamp(6) not null,
+        deleted_at timestamp(6),
+        latitude numeric(10,8),
+        longitude numeric(11,8),
+        postal_code varchar(20),
+        state varchar(100) not null,
+        street_address varchar(500) not null,
+        updated_at timestamp(6),
+        primary key (address_id)
+    )
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists bookings 
+       add column deleted_at timestamp(6)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists bookings 
+       alter column special_request set data type TEXT
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists payments 
+       add column deleted_at timestamp(6)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists properties 
+       add column deleted_at timestamp(6)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists properties 
+       alter column description set data type TEXT
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists properties 
+       add column address_id uuid
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists property_images 
+       add column deleted_at timestamp(6)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists reviews 
+       alter column comment set data type TEXT
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists reviews 
+       add column deleted_at timestamp(6)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists units 
+       add column deleted_at timestamp(6)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists users 
+       add column deleted_at timestamp(6)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists wishlists 
+       add column deleted_at timestamp(6)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists properties 
+       drop constraint if exists UKp6thrqusi0garmb8xys0w7fs8
+2026-03-23 16:01:22 [main] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2026-03-23 16:01:22 [main] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - constraint "ukp6thrqusi0garmb8xys0w7fs8" of relation "properties" does not exist, skipping
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists properties 
+       add constraint UKp6thrqusi0garmb8xys0w7fs8 unique (address_id)
+2026-03-23 16:01:22 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists properties 
+       add constraint FKa14pem3vquh6umb7s5jmb81hh 
+       foreign key (address_id) 
+       references addresses
+2026-03-23 16:01:22 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-23 16:01:23 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-03-23 16:01:23 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2026-03-23 16:01:23 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-23 16:01:23 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-23 16:01:24 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 63 mappings in 'requestMappingHandlerMapping'
+2026-03-23 16:01:24 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-03-23 16:01:24 [main] DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-03-23 16:01:24 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-03-23 16:01:24 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-03-23 16:01:24 [main] INFO  c.staynest.StayNestApplicationTests - Started StayNestApplicationTests in 4.344 seconds (process running for 4.921)
+2026-03-23 16:01:24 [SpringApplicationShutdownHook] DEBUG o.s.w.c.s.GenericWebApplicationContext - Closing org.springframework.web.context.support.GenericWebApplicationContext@27dc79f7, started on Mon Mar 23 16:01:20 IST 2026
+2026-03-23 16:01:24 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-23 16:01:24 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-03-23 16:01:24 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-03-23 16:01:26 [main] INFO  com.staynest.StayNestApplication - Starting StayNestApplication using Java 21.0.10 with PID 115961 (/home/sanchit/Projects/StayNest_All/StayNest/staynest-backend/target/classes started by sanchit in /home/sanchit/Projects/StayNest_All/StayNest/staynest-backend)
+2026-03-23 16:01:26 [main] DEBUG com.staynest.StayNestApplication - Running with Spring Boot v3.3.5, Spring v6.1.14
+2026-03-23 16:01:26 [main] INFO  com.staynest.StayNestApplication - The following 1 profile is active: "dev"
+2026-03-23 16:01:26 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-23 16:01:26 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 36 ms. Found 8 JPA repository interfaces.
+2026-03-23 16:01:27 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-03-23 16:01:27 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-03-23 16:01:27 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-03-23 16:01:27 [main] INFO  o.a.c.c.C.[.[localhost].[/api/v1] - Initializing Spring embedded WebApplicationContext
+2026-03-23 16:01:27 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1221 ms
+2026-03-23 16:01:27 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-23 16:01:27 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-03-23 16:01:27 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-03-23 16:01:27 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-23 16:01:27 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@f810c18
+2026-03-23 16:01:27 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-23 16:01:27 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-23 16:01:27 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-23 16:01:28 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-23 16:01:28 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists bookings 
+       alter column special_request set data type TEXT
+2026-03-23 16:01:28 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists properties 
+       alter column description set data type TEXT
+2026-03-23 16:01:28 [main] DEBUG org.hibernate.SQL - 
+    alter table if exists reviews 
+       alter column comment set data type TEXT
+2026-03-23 16:01:28 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-23 16:01:28 [main] DEBUG c.s.security.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-03-23 16:01:28 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-03-23 16:01:28 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2026-03-23 16:01:28 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-23 16:01:29 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-23 16:01:29 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 63 mappings in 'requestMappingHandlerMapping'
+2026-03-23 16:01:29 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-03-23 16:01:29 [main] DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-03-23 16:01:29 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-03-23 16:01:29 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-03-23 16:01:30 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/api/v1'
+2026-03-23 16:01:30 [main] INFO  com.staynest.StayNestApplication - Started StayNestApplication in 4.239 seconds (process running for 4.584)
+2026-03-23 16:01:33 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-23 16:01:33 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-03-23 16:01:33 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

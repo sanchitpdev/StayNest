@@ -2,6 +2,8 @@ package com.staynest.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -18,6 +20,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE wishlists SET deleted_at = NOW() WHERE wishlist_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Wishlist {
 
     //=========Primary Key===========
@@ -30,6 +34,9 @@ public class Wishlist {
     @CreatedDate
     @Column(name = "created_at",nullable = false,updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     //Many wishlists for one user
     @ManyToOne(fetch = FetchType.LAZY)

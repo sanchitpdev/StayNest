@@ -80,7 +80,7 @@ public class PropertyService {
                 .propertyName(request.getPropertyName())
                 .description(request.getDescription())
                 .propertyType(request.getPropertyType())
-                .address(request.getAddress())
+                .streetAddress(request.getAddress())
                 .city(request.getCity())
                 .state(request.getState())
                 .country(request.getCountry())
@@ -101,7 +101,7 @@ public class PropertyService {
                 .propertyName(savedProperty.getPropertyName())
                 .description(savedProperty.getDescription())
                 .propertyType(savedProperty.getPropertyType())
-                .address(savedProperty.getAddress())
+                .address(savedProperty.getStreetAddress())
                 .city(savedProperty.getCity())
                 .state(savedProperty.getState())
                 .country(savedProperty.getCountry())
@@ -193,7 +193,7 @@ public class PropertyService {
                 .collect(Collectors.toList());
     }
 
-    /**
+    /** 
      * Update Property
      * Only the property owner can update
      *
@@ -221,7 +221,7 @@ public class PropertyService {
         property.setPropertyName(request.getPropertyName());
         property.setDescription(request.getDescription());
         property.setPropertyType(request.getPropertyType());
-        property.setAddress(request.getAddress());
+        property.setStreetAddress(request.getAddress());
         property.setCity(request.getCity());
         property.setState(request.getState());
         property.setCountry(request.getCountry());
@@ -240,7 +240,7 @@ public class PropertyService {
                 .propertyName(updatedProperty.getPropertyName())
                 .description(updatedProperty.getDescription())
                 .propertyType(updatedProperty.getPropertyType())
-                .address(updatedProperty.getAddress())
+                .address(updatedProperty.getStreetAddress())
                 .city(updatedProperty.getCity())
                 .state(updatedProperty.getState())
                 .country(updatedProperty.getCountry())
@@ -426,7 +426,7 @@ public class PropertyService {
                 .propertyName(property.getPropertyName())
                 .description(property.getDescription())
                 .propertyType(property.getPropertyType())
-                .address(property.getAddress())
+                .address(property.getStreetAddress())
                 .city(property.getCity())
                 .state(property.getState())
                 .country(property.getCountry())

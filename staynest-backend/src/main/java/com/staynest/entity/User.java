@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.staynest.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -26,6 +28,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql ="UPDATE users SET deleted_at = NOW() WHERE user_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class User implements UserDetails{
     //=============primary key==========
     @Id
@@ -67,6 +71,9 @@ public class User implements UserDetails{
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     //===========RELATIONSHIPS==========
     //one user can host many properties

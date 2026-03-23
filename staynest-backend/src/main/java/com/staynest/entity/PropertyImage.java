@@ -5,6 +5,8 @@ import com.staynest.enums.BookingStatus;
 import com.staynest.enums.ImageType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,6 +23,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE property_images SET deleted_at = NOW() WHERE image_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class PropertyImage {
     //=========Primary Key==========
     @Id
@@ -47,6 +51,9 @@ public class PropertyImage {
     @CreatedDate
     @Column(name = "created_at",nullable = false,updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     //=========Relationship========
     //Many images for one property

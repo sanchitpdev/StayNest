@@ -4,6 +4,8 @@ import com.staynest.enums.PaymentMethod;
 import com.staynest.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -19,6 +21,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE payments SET deleted_at = NOW() WHERE payment_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Payment {
     //==========Primary Key==========
     @Id
@@ -50,6 +54,8 @@ public class Payment {
     @Column(name = "created_at",nullable = false,updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
     //==========Relationship============
     //Many Payments for one booking
     @ManyToOne(fetch = FetchType.LAZY)

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -19,6 +21,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE reviews SET deleted_at = NOW() WHERE review_id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Review {
 
     //=========Primary Key===========
@@ -62,6 +66,8 @@ public class Review {
     @Column(name = "created_at", nullable = false,updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
     //===========RelationShip========;
     //one review for one booking
     @OneToOne(fetch = FetchType.LAZY)
