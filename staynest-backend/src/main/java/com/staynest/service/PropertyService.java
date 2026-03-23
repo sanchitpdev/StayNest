@@ -193,7 +193,7 @@ public class PropertyService {
                 .collect(Collectors.toList());
     }
 
-    /** 
+    /**
      * Update Property
      * Only the property owner can update
      *
