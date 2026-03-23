@@ -63,6 +63,24 @@ public class User implements UserDetails{
     @Builder.Default
     private Boolean isVerified = false;
 
+    @Column(name = "is_email_verified", nullable = false)
+    @Builder.Default
+    private Boolean isEmailVerified = false;
+
+    @Column(name = "is_phone_verified", nullable = false)
+    @Builder.Default
+    private Boolean isPhoneVerified = false;
+
+    @Column(name = "is_identity_verified", nullable = false)
+    @Builder.Default
+    private Boolean isIdentityVerified = false;
+
+    @Column(name = "bio", columnDefinition = "TEXT")
+    private String bio;
+
+    @Column(name = "date_of_birth")
+    private java.time.LocalDate dateOfBirth;
+
     //========AUDIT FIELDS===========
     @CreatedDate
     @Column(name = "created_at",nullable = false,updatable = false)

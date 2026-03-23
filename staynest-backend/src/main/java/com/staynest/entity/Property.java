@@ -1,15 +1,15 @@
 package com.staynest.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.staynest.enums.CancellationPolicy;
+import com.staynest.enums.PropertyStatus;
 import com.staynest.enums.PropertyType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Type;
-import org.hibernate.engine.spi.CascadeStyle;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -79,6 +79,23 @@ public class Property {
     @Column(name = "amenities",columnDefinition = "jsonb")
     private Map<String, Object> amenities;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "property_status", nullable = false)
+    @Builder.Default
+    private PropertyStatus propertyStatus = PropertyStatus.DRAFT;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cancellation_policy", nullable = false)
+    @Builder.Default
+    private CancellationPolicy cancellationPolicy = CancellationPolicy.MODERATE;
+
+    @Column(name = "min_stay_nights")
+    @Builder.Default
+    private Integer minStayNights = 1;
+
+    @Column(name = "max_stay_nights")
+    private Integer maxStayNights;
+
     //========Audit fields======
     @CreatedDate
     @Column(name = "created_at",nullable = false,updatable = false)
@@ -139,5 +156,9 @@ public class Property {
     public void removeUnit(Unit unit){
         units.remove(unit);
         unit.setProperty(null);
+    }
+
+    public boolean isBookable() {
+        return propertyStatus == PropertyStatus.ACTIVE;
     }
 }

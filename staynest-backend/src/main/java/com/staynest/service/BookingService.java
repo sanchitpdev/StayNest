@@ -45,6 +45,9 @@ public class BookingService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AvailabilityCalendarService availabilityCalendarService;
+
     /**
      * Create a new Booking
      * @param request - Booking Details
@@ -240,6 +243,13 @@ public class BookingService {
         booking.setBookingStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
+        // Release calendar dates
+        availabilityCalendarService.releaseDates(
+                booking.getUnit().getUnitId(),
+                booking.getCheckInDate(),
+                booking.getCheckOutDate()
+        );
+
         logger.info("Booking {} cancelled successfully" ,bookingId);
     }
 
@@ -273,6 +283,13 @@ public class BookingService {
         booking.setBookingStatus(BookingStatus.CONFIRMED);
         Booking confirmedBooking = bookingRepository.save(booking);
 
+        //Block Calender Dated
+        availabilityCalendarService.blockDates(
+                booking.getUnit().getUnitId(),
+                booking.getCheckInDate(),
+                booking.getCheckOutDate(),
+                booking.getBookingId()
+        );
         logger.info("Booking {} confirmed successfully", bookingId);
 
         return buildBookingResponse(confirmedBooking);

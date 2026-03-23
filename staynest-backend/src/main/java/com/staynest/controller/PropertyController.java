@@ -193,4 +193,17 @@ public class PropertyController {
         );
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Activate a property (host publishes their listing)
+     * PATCH /api/v1/properties/{propertyId}/activate
+     */
+    @PatchMapping("/{propertyId}/activate")
+    public ResponseEntity<PropertyCreateResponse> activateProperty(
+            @PathVariable UUID propertyId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        PropertyCreateResponse response = propertyService.activateProperty(propertyId, user.getUserId());
+        return ResponseEntity.ok(response);
+    }
 }

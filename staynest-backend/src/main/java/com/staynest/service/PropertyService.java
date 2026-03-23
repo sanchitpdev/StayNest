@@ -9,6 +9,7 @@ import com.staynest.dto.response.UnitCreateResponse;
 import com.staynest.entity.Property;
 import com.staynest.entity.Unit;
 import com.staynest.entity.User;
+import com.staynest.enums.PropertyStatus;
 import com.staynest.enums.PropertyType;
 import com.staynest.enums.UserRole;
 import com.staynest.exception.ResourceNotFoundException;
@@ -114,6 +115,44 @@ public class PropertyService {
                 .build();
     }
 
+
+    /**
+     * Activate a property - makes it visible and bookable to guests
+     * Only the property owner can activate
+     */
+    @Transactional
+    public PropertyCreateResponse activateProperty(UUID propertyId, UUID userId) {
+        logger.info("Activating property {} by user {}", propertyId, userId);
+
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found with ID: " + propertyId));
+
+        if (!property.getHost().getUserId().equals(userId)) {
+            throw new UnauthorizedException("You can only activate your own properties");
+        }
+
+        property.setPropertyStatus(PropertyStatus.ACTIVE);
+        Property savedProperty = propertyRepository.save(property);
+        logger.info("Property {} activated successfully", propertyId);
+
+        return PropertyCreateResponse.builder()
+                .propertyId(savedProperty.getPropertyId().toString())
+                .propertyName(savedProperty.getPropertyName())
+                .description(savedProperty.getDescription())
+                .propertyType(savedProperty.getPropertyType())
+                .address(savedProperty.getStreetAddress())
+                .city(savedProperty.getCity())
+                .state(savedProperty.getState())
+                .country(savedProperty.getCountry())
+                .postalCode(savedProperty.getPostalCode())
+                .latitude(savedProperty.getLatitude())
+                .longitude(savedProperty.getLongitude())
+                .amenities(savedProperty.getAmenities())
+                .hostId(savedProperty.getHost().getUserId().toString())
+                .createdAt(savedProperty.getCreatedAt())
+                .build();
+    }
+
     /**
      * Get Property by ID with full details
      *
@@ -138,7 +177,12 @@ public class PropertyService {
     @Transactional(readOnly = true)
     public List<PropertyResponse> getAllProperties(){
         logger.info("Fetching all properties");
-        List<Property> properties = propertyRepository.findAll();
+//        List<Property> properties = propertyRepository.findAll();
+//        return properties.stream()
+//                .map(this::buildPropertyResponse)
+//                .collect(Collectors.toList());
+
+        List<Property> properties = propertyRepository.findByPropertyStatus(PropertyStatus.ACTIVE);
         return properties.stream()
                 .map(this::buildPropertyResponse)
                 .collect(Collectors.toList());
@@ -168,8 +212,7 @@ public class PropertyService {
     public List<PropertyResponse> searchPropertiesByCity(String city){
         logger.info("Searching properties in city: {}",city);
 
-        List<Property> properties = propertyRepository.findByCity(city);
-
+        List<Property> properties = propertyRepository.findByCityAndPropertyStatus(city, PropertyStatus.ACTIVE);
         return properties.stream()
                 .map(this::buildPropertyResponse)
                 .collect(Collectors.toList());
@@ -434,6 +477,9 @@ public class PropertyService {
                 .latitude(property.getLatitude())
                 .longitude(property.getLongitude())
                 .amenities(property.getAmenities())
+                .propertyStatus(property.getPropertyStatus())
+                .cancellationPolicy(property.getCancellationPolicy())
+                .minStayNights(property.getMinStayNights())
                 .hostId(property.getHost().getUserId().toString())
                 .hostName(property.getHost().getFullName())
                 .hostEmail(property.getHost().getEmail())

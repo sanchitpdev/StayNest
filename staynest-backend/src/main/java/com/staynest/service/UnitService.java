@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.staynest.service.AvailabilityCalendarService;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +34,9 @@ public class UnitService {
 
     @Autowired
     private PropertyRepository propertyRepository;
+
+    @Autowired
+    private AvailabilityCalendarService availabilityCalendarService;
 
     /**
      * Create a new Unit for a property
@@ -73,7 +78,10 @@ public class UnitService {
 
         //step 4: Save Unit
         Unit savedUnit = unitRepository.save(unit);
-        logger.info("Unit created successfully with Id {}",savedUnit.getUnitId());
+
+        availabilityCalendarService.populateCalendarForUnit(savedUnit.getUnitId());
+
+        logger.info("Unit {} created with availability calendar populated", savedUnit.getUnitId());
 
         //step 5: Build and return response
         return  buildUnitResponse(savedUnit);

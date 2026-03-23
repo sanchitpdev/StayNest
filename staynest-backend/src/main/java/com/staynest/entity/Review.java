@@ -40,6 +40,12 @@ public class Review {
     @Column(name = "comment",columnDefinition = "TEXT")
     private String comment;
 
+    @Column(name = "host_response", columnDefinition = "TEXT")
+    private String hostResponse;
+
+    @Column(name = "host_response_at")
+    private LocalDateTime hostResponseAt;
+
     //==========Category Ratings========
     @Min(1) @Max(5)
     @Column(name = "cleanliness_rating")
@@ -104,5 +110,13 @@ public class Review {
                 valueRating != null;
     }
 
+    public void addHostResponse(String response) {
+        this.hostResponse = response;
+        this.hostResponseAt = LocalDateTime.now();
+    }
+
+    public boolean hasHostResponse() {
+        return hostResponse != null && !hostResponse.isBlank();
+    }
 
 }

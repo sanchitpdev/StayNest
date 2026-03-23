@@ -1,5 +1,7 @@
 package com.staynest.dto.response;
 
+import com.staynest.enums.CancellationPolicy;
+import com.staynest.enums.PropertyStatus;
 import com.staynest.enums.PropertyType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,5 +56,9 @@ public class PropertyResponse {
 
     //Optional: List of Units
     private List<UnitCreateResponse> units;
+
+    private PropertyStatus propertyStatus;
+    private CancellationPolicy cancellationPolicy;
+    private Integer minStayNights;
 
 }

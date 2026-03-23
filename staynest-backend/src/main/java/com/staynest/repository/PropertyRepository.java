@@ -1,6 +1,7 @@
 package com.staynest.repository;
 
 import com.staynest.entity.Property;
+import com.staynest.enums.PropertyStatus;
 import com.staynest.enums.PropertyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -98,6 +99,12 @@ public interface PropertyRepository extends JpaRepository<Property, UUID> {
             Pageable pageable
     );
 
+    List<Property> findByPropertyStatus(PropertyStatus propertyStatus);
+
+    List<Property> findByCityAndPropertyStatus(String city, PropertyStatus propertyStatus);
+
+    // Also add paginated version for consistency
+    Page<Property> findByPropertyStatus(PropertyStatus propertyStatus, Pageable pageable);
 
 
 

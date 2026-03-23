@@ -8,6 +8,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.util.Currency;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -46,6 +47,19 @@ public class Payment {
     @Column(name = "transaction_id",length = 255)
     private String transactionId;
 
+    @Column(name = "currency", length = 3)
+    @Builder.Default
+    private String currency = "INR";
+
+    @Column(name = "refund_amount", precision = 10, scale = 2)
+    private BigDecimal refundAmount;
+
+    @Column(name = "refund_date")
+    private LocalDateTime refundDate;
+
+    @Column(name = "notes", length = 500)
+    private String notes;
+
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
 
@@ -80,9 +94,16 @@ public class Payment {
         this.paymentDate = LocalDateTime.now();
     }
 
+    public void markAsRefunded(BigDecimal refundAmount) {
+        this.paymentStatus = PaymentStatus.REFUND;
+        this.refundAmount = refundAmount;
+        this.refundDate = LocalDateTime.now();
+    }
+
     //Mark payment As failed
     public void markAsFailed(){
         this.paymentStatus = PaymentStatus.FAILED;
     }
+
 
 }
