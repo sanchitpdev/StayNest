@@ -90,11 +90,21 @@ public class Unit {
     @Builder.Default
     private List<Booking> bookings = new ArrayList<>();
 
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    @JsonIgnore
+    private List<UnitPricing> pricingRules = new ArrayList<>();
+
     //One unit can have specific images
     @OneToMany(mappedBy = "unit",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @Builder.Default
     @JsonIgnore
     private List<PropertyImage> propertyImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    @JsonIgnore
+    private List<AvailabilityCalendar> availabilityCalendar = new ArrayList<>();
 
     //=========Helper Method==================
     //Calculate total price
