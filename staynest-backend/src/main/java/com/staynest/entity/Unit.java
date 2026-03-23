@@ -1,5 +1,6 @@
 package com.staynest.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -85,6 +86,7 @@ public class Unit {
     //One unit can have specific images
     @OneToMany(mappedBy = "unit",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<PropertyImage> propertyImages = new ArrayList<>();
 
     //=========Helper Method==================

@@ -1,4 +1,5 @@
 package com.staynest.config;
+
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -7,24 +8,20 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 /**
- * Swagger /openAPI Configuration
- * provides interactive API documentation at /swagger-ui.html
+ * Swagger/OpenAPI Configuration.
+ * Access at: http://localhost:8080/swagger-ui/index.html
  */
 @Configuration
 public class SwaggerConfig {
 
-    @Value("${server.servlet.context-path:/}")
-    private String contextPath;
-
     @Bean
-    public OpenAPI customOpenAPI(){
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(getApiInfo())
                 .servers(getServers())
@@ -32,12 +29,9 @@ public class SwaggerConfig {
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"));
     }
 
-    /**
-     * API metadata information
-     */
-    private Info getApiInfo(){
+    private Info getApiInfo() {
         return new Info()
-                .title("StayNest API")
+                .title("StayNest API Documentation")
                 .version("1.0.0")
                 .description("""
                     StayNest - Vacation Rental Platform API
@@ -71,38 +65,28 @@ public class SwaggerConfig {
                     """)
                 .contact(new Contact()
                         .name("Sanchit Pawar")
-                        .email("sanchitp.dev@gmail.com")
-                        .url("https://github.com/sanchitpdev"))
+                        .email("sanchitp.dev@gmail.com"))
                 .license(new License()
                         .name("MIT License")
                         .url("https://opensource.org/licenses/MIT"));
     }
 
-    /**
-     * API server configuration
-     */
     private List<Server> getServers() {
         Server devServer = new Server()
-                .url("http://localhost:8080" + contextPath)
+                .url("http://localhost:8080/api/v1")
                 .description("Development Server");
 
-        Server prodServer = new Server()
-                .url("https://api.staynest.com" + contextPath)
-                .description("Production Server (TBD)");
-
-        return List.of(devServer,prodServer);
+        return List.of(devServer);
     }
 
-    /**
-     * Security scheme components
-     */
-    private Components getComponents(){
+    private Components getComponents() {
         return new Components()
                 .addSecuritySchemes("Bearer Authentication",
                         new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")
-                                .description("Enter JWT token obtained from /api/v1/auth/login"));
+                                .description("Enter JWT token (without 'Bearer' prefix)")
+                );
     }
 }

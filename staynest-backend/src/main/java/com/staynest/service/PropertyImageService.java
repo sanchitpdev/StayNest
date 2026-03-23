@@ -177,7 +177,7 @@ public class PropertyImageService {
      */
     @Transactional(readOnly = true)
     public List<PropertyImage> getUnitImages(UUID unitId){
-        return propertyImageRepository.findByProperty_PropertyIdOrderByDisplayOrder(unitId);
+        return propertyImageRepository.findByUnit_UnitIdOrderByDisplayOrder(unitId);
     }
 
 }

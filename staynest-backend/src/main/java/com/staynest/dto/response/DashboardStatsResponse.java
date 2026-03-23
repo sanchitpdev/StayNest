@@ -12,9 +12,9 @@ import java.util.Map;
  * DTO for dashboard statistics
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class DashboardStatsResponse {
 
     //User-Specific stats

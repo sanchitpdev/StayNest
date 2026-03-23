@@ -70,7 +70,7 @@ public interface PropertyRepository extends JpaRepository<Property, UUID> {
             "WHERE (:city IS NULL OR p.city = :city) " +
             "AND (:state IS NULL OR p.state = :state) " +
             "AND (:country IS NULL OR p.country = :country) " +
-            "AND (:propertyTypes IS NULL OR p.propertyType = :propertyType) " +
+            "AND (:propertyType IS NULL OR p.propertyType = :propertyType) " +
             "AND (:minBedrooms IS NULL OR u.bedrooms >= :minBedrooms) " +
             "AND (:maxBedrooms IS NULL OR u.bedrooms <= :maxBedrooms) " +
             "AND (:minGuests IS NULL OR u.maxGuests >= :minGuests)")

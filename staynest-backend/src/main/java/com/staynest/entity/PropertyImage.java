@@ -1,5 +1,6 @@
 package com.staynest.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.staynest.enums.BookingStatus;
 import com.staynest.enums.ImageType;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "property-images")
+@Table(name = "property_images")
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
@@ -50,12 +51,14 @@ public class PropertyImage {
     //=========Relationship========
     //Many images for one property
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "property-id",nullable = false)
+    @JoinColumn(name = "property_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "host", "images", "units", "reviews", "wishlists"})
     private Property property;
 
     //Many images for one unit
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unit_id",nullable = true)
+    @JoinColumn(name = "unit_id", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "propertyImages", "property", "bookings"})
     private Unit unit;
 
     //==========Helper method========

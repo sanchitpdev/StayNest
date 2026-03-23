@@ -1,5 +1,6 @@
 package com.staynest.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.staynest.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -69,23 +70,27 @@ public class User implements UserDetails{
 
     //===========RELATIONSHIPS==========
     //one user can host many properties
-    @OneToMany(mappedBy = "host",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Property> hostedProperties = new ArrayList<>();
 
     //one user(as guest) can make many bookings
-    @OneToMany(mappedBy = "guest",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Booking> bookings = new ArrayList<>();
 
     //one user can have many wishlist
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Wishlist> wishlists = new ArrayList<>();
 
     //one user can write many Reviews
-    @OneToMany(mappedBy = "reviewer",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Review> reviews = new ArrayList<>();
 
     //=============HELPER METHOD============

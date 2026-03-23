@@ -1,5 +1,6 @@
 package com.staynest.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.staynest.enums.PropertyType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -82,7 +83,8 @@ public class Property {
     //======Relationship=========
     //Many properties belongs to one user
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "host_id",nullable = false)
+    @JoinColumn(name = "host_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "hostedProperties", "bookings", "wishlists", "reviews", "passwordHash"})
     private User host;
 
     //one property has many units
