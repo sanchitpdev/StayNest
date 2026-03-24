@@ -2,6 +2,7 @@ package com.staynest.controller;
 
 import com.staynest.dto.request.ChangePasswordRequest;
 import com.staynest.dto.request.UserUpdateRequest;
+import com.staynest.dto.response.ApiResponse;
 import com.staynest.dto.response.MessageResponse;
 import com.staynest.dto.response.UserProfileResponse;
 import com.staynest.dto.response.UserStatsResponse;
@@ -61,13 +62,13 @@ public class UserController {
      * Change Password
      */
     @PostMapping("/me/change-password")
-    public ResponseEntity<MessageResponse> changPassword(
+    public ResponseEntity<ApiResponse> changPassword(
             @Valid @RequestBody ChangePasswordRequest request,
             Authentication authentication
             ){
         User user = (User) authentication.getPrincipal();
         userService.changePassword(user.getUserId(), request);
-        return ResponseEntity.ok(new MessageResponse("Password change successfully"));
+        return ResponseEntity.ok(ApiResponse.success("Password change successfully"));
     }
 
     /**
