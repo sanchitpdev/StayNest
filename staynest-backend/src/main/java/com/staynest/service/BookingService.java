@@ -365,6 +365,13 @@ public class BookingService {
                 .review(booking.getReview() != null ? buildReviewResponse(booking.getReview()): null)
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())
+                .discountAmount(booking.getDiscountAmount())
+                .finalPrice(booking.getFinalPrice() != null
+                        ? booking.getFinalPrice()
+                        : booking.getTotalPrice())
+                .appliedCouponCode(booking.getBookingCoupons().isEmpty()
+                        ? null
+                        : booking.getBookingCoupons().get(0).getCouponCodeSnapshot())
                 .build();
     }
 

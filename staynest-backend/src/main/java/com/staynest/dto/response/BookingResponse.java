@@ -60,4 +60,8 @@ public class BookingResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private BigDecimal discountAmount;
+    private BigDecimal finalPrice;
+    private String appliedCouponCode;
+
 }

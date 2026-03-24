@@ -129,6 +129,10 @@ public class User implements UserDetails{
         return role == UserRole.HOST;
     }
 
+    public boolean isAdmin() {
+        return role == UserRole.ADMIN;
+    }
+
     //check user has a guest role
     public boolean isGuestOrHost    (){
         return role == UserRole.GUEST || role == UserRole.HOST;

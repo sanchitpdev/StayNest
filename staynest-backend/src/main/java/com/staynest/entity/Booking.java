@@ -53,6 +53,13 @@ public class Booking {
     @Column(name = "total_price",nullable = false,precision = 10,scale = 2)
     private BigDecimal totalPrice;
 
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
+    @Column(name = "final_price", precision = 10, scale = 2)
+    private BigDecimal finalPrice;
+
     //==========Status=============
     @Enumerated(EnumType.STRING)
     @Column(name = "booking_status",nullable = false)
@@ -90,6 +97,10 @@ public class Booking {
     //one booking can have one reviews
     @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Review review;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<BookingCoupon> bookingCoupons = new ArrayList<>();
 
     //==============Helper Method===========
     //Calculate the number of nights for this booking

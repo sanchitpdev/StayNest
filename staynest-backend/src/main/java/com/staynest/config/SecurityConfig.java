@@ -180,12 +180,19 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/users/*"
                         ).permitAll()
-
+                        // ========================================
+                        // COUPON ENDPOINTS
+                        // ========================================
+                        // Public - view active coupons
+                        .requestMatchers(HttpMethod.GET, "/coupons").permitAll()
+                        // Admin only - create, manage coupons
+                        .requestMatchers(HttpMethod.POST, "/coupons").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/coupons/all").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/coupons/*/deactivate").hasRole("ADMIN")
                         // ========================================
                         // ERROR HANDLING (PUBLIC)
                         // ========================================
                         .requestMatchers("/error").permitAll()
-
                         // ========================================
                         // ALL OTHER ENDPOINTS (PROTECTED)
                         // ========================================
