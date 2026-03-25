@@ -2,6 +2,8 @@ package com.staynest.repository;
 
 import com.staynest.entity.User;
 import com.staynest.entity.Wishlist;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -36,4 +38,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, UUID> {
     );
 
     UUID user(User user);
+
+    //Whitelist of user in paginated format
+    Page<Wishlist> findByUser_UserId(UUID userId, Pageable pageable);
 }

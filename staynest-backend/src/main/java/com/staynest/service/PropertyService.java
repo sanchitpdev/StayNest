@@ -444,6 +444,64 @@ public class PropertyService {
         return PagedResponse.of(responsePage);
     }
 
+    /**
+     * Suspend a property — ADMIN only action
+     * Suspended properties are hidden from guests
+     */
+    @Transactional
+    public PropertyCreateResponse suspendProperty(UUID propertyId) {
+        logger.info("Suspending property {}", propertyId);
+
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found: " + propertyId));
+
+        property.setPropertyStatus(PropertyStatus.SUSPENDED);
+        Property saved = propertyRepository.save(property);
+        logger.info("Property {} suspended", propertyId);
+
+        return buildPropertyCreateResponse(saved);
+    }
+
+    /**
+     * Deactivate a property — host sets it to inactive temporarily
+     */
+    @Transactional
+    public PropertyCreateResponse deactivateProperty(UUID propertyId, UUID userId) {
+        logger.info("Deactivating property {} by user {}", propertyId, userId);
+
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found: " + propertyId));
+
+        if (!property.getHost().getUserId().equals(userId)) {
+            throw new UnauthorizedException("You can only deactivate your own properties");
+        }
+
+        property.setPropertyStatus(PropertyStatus.INACTIVE);
+        Property saved = propertyRepository.save(property);
+
+        return buildPropertyCreateResponse(saved);
+    }
+
+    // Extract repeated builder logic into a private helper
+    private PropertyCreateResponse buildPropertyCreateResponse(Property property) {
+        return PropertyCreateResponse.builder()
+                .propertyId(property.getPropertyId().toString())
+                .propertyName(property.getPropertyName())
+                .description(property.getDescription())
+                .propertyType(property.getPropertyType())
+                .address(property.getStreetAddress())
+                .city(property.getCity())
+                .state(property.getState())
+                .country(property.getCountry())
+                .postalCode(property.getPostalCode())
+                .latitude(property.getLatitude())
+                .longitude(property.getLongitude())
+                .amenities(property.getAmenities())
+                .hostId(property.getHost().getUserId().toString())
+                .createdAt(property.getCreatedAt())
+                .build();
+    }
+
     //Helper Method to build PropertyResponse form Property Entity
 
     private PropertyResponse buildPropertyResponse(Property property) {

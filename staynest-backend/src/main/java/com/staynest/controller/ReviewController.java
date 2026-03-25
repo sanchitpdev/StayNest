@@ -1,6 +1,8 @@
 package com.staynest.controller;
 
+import com.staynest.dto.request.HostResponseRequest;
 import com.staynest.dto.request.ReviewCreateRequest;
+import com.staynest.dto.response.PagedResponse;
 import com.staynest.dto.response.ReviewCreateResponse;
 import com.staynest.entity.Booking;
 import com.staynest.entity.User;
@@ -56,18 +58,17 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Get all reviews for property
-     * public endpoint - anyone can view property reviews
 
-     * GET /api/v1/reviews/property/{propertyId}
+    /**
+     * Get reviews for a property with pagination
+     * GET /api/v1/reviews/property/{propertyId}?page=0&size=10
      */
-    @GetMapping("property/{propertyId}")
-    public ResponseEntity<List<ReviewCreateResponse>> getReviewsByProperty(
-            @PathVariable UUID propertyId
-    ){
-        List<ReviewCreateResponse> reviews = reviewService.getReviewsByUser(propertyId);
-        return ResponseEntity.ok(reviews);
+    @GetMapping("/property/{propertyId}")
+    public ResponseEntity<PagedResponse<ReviewCreateResponse>> getReviewsByProperty(
+            @PathVariable UUID propertyId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(reviewService.getReviewsByProperty(propertyId, page, size));
     }
 
     /**
@@ -105,5 +106,20 @@ public class ReviewController {
         User user = (User) authentication.getPrincipal();
         List<Booking> bookings = reviewService.getReviewableBookings(user.getUserId());
         return ResponseEntity.ok(bookings);
+    }
+
+    /**
+     * Host responds to a review
+     * POST /api/v1/reviews/{reviewId}/host-response
+     */
+    @PostMapping("/{reviewId}/host-response")
+    public ResponseEntity<ReviewCreateResponse> addHostResponse(
+            @PathVariable UUID reviewId,
+            @Valid @RequestBody HostResponseRequest request,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        ReviewCreateResponse response = reviewService.addHostResponse(
+                reviewId, request.getResponse(), user.getUserId());
+        return ResponseEntity.ok(response);
     }
 }

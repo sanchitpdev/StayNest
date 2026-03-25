@@ -174,6 +174,13 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // ========================================
+                        // Pricing Check
+                        // ========================================
+                        .requestMatchers(HttpMethod.GET,
+                                "/pricing/units/*"
+                        ).permitAll()
+
+                        // ========================================
                         // USER PROFILE ENDPOINTS (PUBLIC GET)
                         // ========================================
                         // View public user profiles

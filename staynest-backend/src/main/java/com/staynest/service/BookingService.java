@@ -302,21 +302,34 @@ public class BookingService {
      * @param checkOut - check out date
      * @return true if available, false if occupied
      */
-    @Transactional(readOnly = true)
-    public boolean checkAvailability(UUID unitId, LocalDate checkIn, LocalDate checkOut){
-        logger.info("Checking availability for unit {} from {} to {}", unitId,checkIn,checkOut);
+    //Old method for checkAvailibikity
+//    @Transactional(readOnly = true)
+//    public boolean checkAvailability(UUID unitId, LocalDate checkIn, LocalDate checkOut){
+//        logger.info("Checking availability for unit {} from {} to {}", unitId,checkIn,checkOut);
+//
+//        //verify unit exists
+//        if (!unitRepository.existsById(unitId)){
+//            throw new ResourceNotFoundException("Unit not found with ID: " +unitId );
+//        }
+//
+//        //Check for overlapping bookings
+//        List<Booking> overlappingBookings = bookingRepository.findOverlappingBookings(
+//                unitId,checkIn,checkOut
+//        );
+//
+//        return overlappingBookings.isEmpty();
+//    }
 
-        //verify unit exists
-        if (!unitRepository.existsById(unitId)){
-            throw new ResourceNotFoundException("Unit not found with ID: " +unitId );
+    @Transactional(readOnly = true)
+    public boolean checkAvailability(UUID unitId, LocalDate checkIn, LocalDate checkOut) {
+        logger.info("Checking availability for unit {} from {} to {}", unitId, checkIn, checkOut);
+
+        if (!unitRepository.existsById(unitId)) {
+            throw new ResourceNotFoundException("Unit not found with ID: " + unitId);
         }
 
-        //Check for overlapping bookings
-        List<Booking> overlappingBookings = bookingRepository.findOverlappingBookings(
-                unitId,checkIn,checkOut
-        );
 
-        return overlappingBookings.isEmpty();
+        return availabilityCalendarService.isRangeAvailable(unitId, checkIn, checkOut);
     }
 
     /**

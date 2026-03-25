@@ -1,6 +1,7 @@
 package com.staynest.service;
 
 import com.staynest.dto.request.ReviewCreateRequest;
+import com.staynest.dto.response.PagedResponse;
 import com.staynest.dto.response.ReviewCreateResponse;
 import com.staynest.entity.Booking;
 import com.staynest.entity.Review;
@@ -12,6 +13,10 @@ import com.staynest.repository.ReviewRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -104,13 +109,15 @@ public class ReviewService {
      * @return List of ReviewCreateResponse
      */
     @Transactional(readOnly = true)
-    public List<ReviewCreateResponse> getReviewByProperty(UUID propertyId){
-        logger.info("Fetching reviews for property {} ", propertyId);
+    public PagedResponse<ReviewCreateResponse> getReviewsByProperty(
+            UUID propertyId, int page, int size) {
+        logger.info("Fetching reviews for property {}", propertyId);
 
-        List<Review> reviews = reviewRepository.findByProperty_PropertyId(propertyId);
-        return reviews.stream()
-                .map(this::buildReviewResponse)
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Review> reviewPage = reviewRepository.findByProperty_PropertyId(propertyId, pageable);
+        Page<ReviewCreateResponse> responsePage = reviewPage.map(this::buildReviewResponse);
+
+        return PagedResponse.of(responsePage);
     }
 
     /**
@@ -151,6 +158,36 @@ public class ReviewService {
     }
 
     /**
+     * Only the property host can respond
+     * @param reviewId - Review id
+     * @param response _ Response DTO
+     * @param hostId - User id of HOST
+     * @return DTO response of Review
+     */
+    @Transactional
+    public ReviewCreateResponse addHostResponse(UUID reviewId, String response, UUID hostId) {
+        logger.info("Host {} adding response to review {}", hostId, reviewId);
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found: " + reviewId));
+
+        // Only the property host can respond
+        if (!review.getProperty().getHost().getUserId().equals(hostId)) {
+            throw new UnauthorizedException("Only the property host can respond to reviews");
+        }
+
+        if (review.hasHostResponse()) {
+            throw new BadRequestException("You have already responded to this review");
+        }
+
+        review.addHostResponse(response);
+        Review saved = reviewRepository.save(review);
+
+        logger.info("Host response added to review {}", reviewId);
+        return buildReviewResponse(saved);
+    }
+
+    /**
      * Helper method to build ReviewCreateRepose from review entity
      */
     private ReviewCreateResponse buildReviewResponse(Review review) {
@@ -168,6 +205,8 @@ public class ReviewService {
                 .communicationRating(review.getCommunicationRating())
                 .locationRating(review.getLocationRating())
                 .valueRating(review.getValueRating())
+                .hostResponse(review.getHostResponse())
+                .hostResponseAt(review.getHostResponseAt())
                 .createdAt(review.getCreatedAt())
                 .build();
     }

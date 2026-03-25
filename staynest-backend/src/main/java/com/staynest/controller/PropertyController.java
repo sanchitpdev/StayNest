@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -204,6 +205,30 @@ public class PropertyController {
             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         PropertyCreateResponse response = propertyService.activateProperty(propertyId, user.getUserId());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Deactivate a property (host hides it temporarily)
+     * PATCH /api/v1/properties/{propertyId}/deactivate
+     */
+    @PatchMapping("/{propertyId}/deactivate")
+    public ResponseEntity<PropertyCreateResponse> deactivateProperty(
+            @PathVariable UUID propertyId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        PropertyCreateResponse response = propertyService.deactivateProperty(propertyId, user.getUserId());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Suspend a property — ADMIN only
+     * PATCH /api/v1/properties/{propertyId}/suspend
+     */
+    @PatchMapping("/{propertyId}/suspend")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PropertyCreateResponse> suspendProperty(@PathVariable UUID propertyId) {
+        PropertyCreateResponse response = propertyService.suspendProperty(propertyId);
         return ResponseEntity.ok(response);
     }
 }

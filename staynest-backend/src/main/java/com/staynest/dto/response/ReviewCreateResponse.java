@@ -32,5 +32,9 @@ public class ReviewCreateResponse {
     private Integer communicationRating;
     private Integer locationRating;
     private Integer valueRating;
+
+    // Add these fields
+    private String hostResponse;
+    private LocalDateTime hostResponseAt;
     private LocalDateTime createdAt;
 }

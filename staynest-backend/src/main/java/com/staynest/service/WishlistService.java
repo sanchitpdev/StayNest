@@ -1,5 +1,6 @@
 package com.staynest.service;
 
+import com.staynest.dto.response.PagedResponse;
 import com.staynest.dto.response.WishlistResponse;
 import com.staynest.entity.Property;
 import com.staynest.entity.User;
@@ -10,6 +11,10 @@ import com.staynest.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,17 +105,17 @@ public class WishlistService {
 
     /**
      * Get all wishlist for a user
-     * @param userId - User ID
-     * @return List of WishlistResponse
+     * @param userId - User id
+     * @param page - Page no
+     * @param size - Page Size
+     * @return - List of WishlistResponse
      */
     @Transactional(readOnly = true)
-    public List<WishlistResponse> getMyWishlist(UUID userId){
-        logger.info("Fetching wishlists for user {}",userId);
-
-        List<Wishlist> wishlists = wishlistRepository.findByUser_UserId(userId);
-        return wishlists.stream()
-                .map(this::buildWishlistResponse)
-                .collect(Collectors.toList());
+    public PagedResponse<WishlistResponse> getMyWishlist(UUID userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Wishlist> wishlistPage = wishlistRepository.findByUser_UserId(userId, pageable);
+        Page<WishlistResponse> responsePage = wishlistPage.map(this::buildWishlistResponse);
+        return PagedResponse.of(responsePage);
     }
 
     /**

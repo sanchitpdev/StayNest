@@ -1,5 +1,6 @@
 package com.staynest.controller;
 
+import com.staynest.dto.response.PagedResponse;
 import com.staynest.dto.response.WishlistResponse;
 import com.staynest.entity.User;
 import com.staynest.service.WishlistService;
@@ -50,13 +51,15 @@ public class WishlistController {
     }
 
     /**
-     * Get my wishlists (saved properties)
+     * Get my wishlists in paginated form (saved properties)
      */
-    @GetMapping("/my-wishlists")
-    public ResponseEntity<List<WishlistResponse>> getMyWishlists(Authentication authentication){
+    @GetMapping
+    public ResponseEntity<PagedResponse<WishlistResponse>> getMyWishlist(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         User user = (User) authentication.getPrincipal();
-        List<WishlistResponse> wishlist = wishlistService.getMyWishlist(user.getUserId());
-        return ResponseEntity.ok(wishlist);
+        return ResponseEntity.ok(wishlistService.getMyWishlist(user.getUserId(), page, size));
     }
 
     /**
