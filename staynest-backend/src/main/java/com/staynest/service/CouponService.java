@@ -7,13 +7,16 @@ import com.staynest.dto.response.CouponResponse;
 import com.staynest.entity.Booking;
 import com.staynest.entity.BookingCoupon;
 import com.staynest.entity.Coupon;
+import com.staynest.entity.User;
 import com.staynest.enums.BookingStatus;
 import com.staynest.enums.CouponStatus;
 import com.staynest.exception.BadRequestException;
 import com.staynest.exception.ResourceNotFoundException;
+import com.staynest.exception.UnauthorizedException;
 import com.staynest.repository.BookingCouponRepository;
 import com.staynest.repository.BookingRepository;
 import com.staynest.repository.CouponRepository;
+import com.staynest.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,19 +42,21 @@ public class CouponService {
     @Autowired
     private BookingCouponRepository bookingCouponRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     /**
      * Create a new coupon — ADMIN only
      */
     @Transactional
-    public CouponResponse createCoupon(CouponCreateRequest request) {
-        logger.info("Creating coupon with code: {}", request.getCode());
+    public CouponResponse createCoupon(CouponCreateRequest request, UUID userId) {
+        logger.info("Creating coupon with code: {} by user {}", request.getCode(), userId);
 
-        if (couponRepository.existsByCode(request.getCode().toUpperCase())) {
-            throw new BadRequestException("Coupon code already exists: " + request.getCode());
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
 
-        if (request.getValidUntil().isBefore(request.getValidFrom())) {
-            throw new BadRequestException("Valid until date must be after valid from date");
+        if (!user.isAdmin()) {
+            throw new UnauthorizedException("Only administrators can create coupons");
         }
 
         Coupon coupon = Coupon.builder()
@@ -171,24 +176,39 @@ public class CouponService {
      * Get all coupons — ADMIN only
      */
     @Transactional(readOnly = true)
-    public List<CouponResponse> getAllCoupons() {
+    public List<CouponResponse> getAllCoupons(UUID adminId) {
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + adminId));
+
+        if (!admin.isAdmin()) {
+            throw new UnauthorizedException("Only administrators can view all coupons");
+        }
+
         return couponRepository.findAll()
                 .stream()
                 .map(this::buildCouponResponse)
                 .collect(Collectors.toList());
     }
 
+
     /**
      * Deactivate a coupon — ADMIN only
      */
     @Transactional
-    public CouponResponse deactivateCoupon(UUID couponId) {
+    public CouponResponse deactivateCoupon(UUID couponId, UUID adminId) {
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + adminId));
+
+        if (!admin.isAdmin()) {
+            throw new UnauthorizedException("Only administrators can deactivate coupons");
+        }
+
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found: " + couponId));
 
         coupon.setCouponStatus(CouponStatus.INACTIVE);
         couponRepository.save(coupon);
-        logger.info("Coupon {} deactivated", coupon.getCode());
+        logger.info("Coupon {} deactivated by admin {}", coupon.getCode(), adminId);
 
         return buildCouponResponse(coupon);
     }

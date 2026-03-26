@@ -30,10 +30,11 @@ public class CouponController {
      * POST /api/v1/coupons
      */
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CouponResponse> createCoupon(
-            @Valid @RequestBody CouponCreateRequest request) {
-        CouponResponse response = couponService.createCoupon(request);
+            @Valid @RequestBody CouponCreateRequest request,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        CouponResponse response = couponService.createCoupon(request, user.getUserId());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -51,9 +52,9 @@ public class CouponController {
      * GET /api/v1/coupons/all
      */
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<CouponResponse>> getAllCoupons() {
-        return ResponseEntity.ok(couponService.getAllCoupons());
+    public ResponseEntity<List<CouponResponse>> getAllCoupons(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(couponService.getAllCoupons(user.getUserId()));
     }
 
     /**
@@ -74,9 +75,11 @@ public class CouponController {
      * PATCH /api/v1/coupons/{couponId}/deactivate
      */
     @PatchMapping("/{couponId}/deactivate")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CouponResponse> deactivateCoupon(@PathVariable UUID couponId) {
-        CouponResponse response = couponService.deactivateCoupon(couponId);
+    public ResponseEntity<CouponResponse> deactivateCoupon(
+            @PathVariable UUID couponId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        CouponResponse response = couponService.deactivateCoupon(couponId, user.getUserId());
         return ResponseEntity.ok(response);
     }
 }

@@ -449,15 +449,24 @@ public class PropertyService {
      * Suspended properties are hidden from guests
      */
     @Transactional
-    public PropertyCreateResponse suspendProperty(UUID propertyId) {
-        logger.info("Suspending property {}", propertyId);
+    public PropertyCreateResponse suspendProperty(UUID propertyId, UUID userId) {
+        logger.info("Suspending property {} by user {}", propertyId, userId);
+
+        // Verify the requesting user exists and is ADMIN
+        User admin = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+
+        if (!admin.isAdmin()) {
+            logger.warn("User {} attempted to suspend property {} without ADMIN role", userId, propertyId);
+            throw new UnauthorizedException("Only administrators can suspend properties");
+        }
 
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found: " + propertyId));
 
         property.setPropertyStatus(PropertyStatus.SUSPENDED);
         Property saved = propertyRepository.save(property);
-        logger.info("Property {} suspended", propertyId);
+        logger.info("Property {} suspended by admin {}", propertyId, userId);
 
         return buildPropertyCreateResponse(saved);
     }

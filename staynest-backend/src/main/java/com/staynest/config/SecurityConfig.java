@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * Security Configuration for StayNest API.
- *
+
  * Configures:
  * - JWT-based authentication
  * - Public and protected endpoints

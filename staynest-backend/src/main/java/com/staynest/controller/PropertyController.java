@@ -225,10 +225,15 @@ public class PropertyController {
      * Suspend a property — ADMIN only
      * PATCH /api/v1/properties/{propertyId}/suspend
      */
+    // Remove this import entirely if only used for suspend
+// import org.springframework.security.access.prepost.PreAuthorize;
+
     @PatchMapping("/{propertyId}/suspend")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PropertyCreateResponse> suspendProperty(@PathVariable UUID propertyId) {
-        PropertyCreateResponse response = propertyService.suspendProperty(propertyId);
+    public ResponseEntity<PropertyCreateResponse> suspendProperty(
+            @PathVariable UUID propertyId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        PropertyCreateResponse response = propertyService.suspendProperty(propertyId, user.getUserId());
         return ResponseEntity.ok(response);
     }
 }

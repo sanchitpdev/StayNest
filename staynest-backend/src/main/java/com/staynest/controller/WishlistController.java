@@ -18,7 +18,7 @@ import java.util.UUID;
  * REST Controller for wishlist management
  */
 @RestController
-@RequestMapping("/whishlists")
+@RequestMapping("/wishlists")
 public class WishlistController {
 
     @Autowired
@@ -51,7 +51,7 @@ public class WishlistController {
     }
 
     /**
-     * Get my wishlists in paginated form (saved properties)
+     * Get my wishlists in paginated form  (saved properties)
      */
     @GetMapping
     public ResponseEntity<PagedResponse<WishlistResponse>> getMyWishlist(
