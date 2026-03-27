@@ -145,4 +145,16 @@ public class BookingController {
         return ResponseEntity.ok(java.util.Map.of("available",available));
     }
 
+    /**
+     * Complete a booking (host marks stay as completed)
+     * POST /api/v1/bookings/{bookingId}/complete
+     */
+    @PostMapping("/{bookingId}/complete")
+    public ResponseEntity<BookingResponse> completeBooking(
+            @PathVariable UUID bookingId,
+            Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        BookingResponse response = bookingService.completeBooking(bookingId, user.getUserId());
+        return ResponseEntity.ok(response);
+    }
 }

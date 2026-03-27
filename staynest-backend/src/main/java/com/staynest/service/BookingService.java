@@ -333,6 +333,37 @@ public class BookingService {
     }
 
     /**
+     * Update booking as completed
+     * @param bookingId - Booking Id
+     * @param userId - User Id (Guest)
+     * @return DTO of BookingResponse
+     */
+    @Transactional
+    public BookingResponse completeBooking(UUID bookingId, UUID userId) {
+        logger.info("Completing booking {} by user {}", bookingId, userId);
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + bookingId));
+
+        // Only the property host can mark as completed
+        if (!booking.getUnit().getProperty().getHost().getUserId().equals(userId)) {
+            throw new UnauthorizedException("Only the property host can complete a booking");
+        }
+
+        if (booking.getBookingStatus() != BookingStatus.CONFIRMED) {
+            throw new BadRequestException(
+                    "Only CONFIRMED bookings can be completed. Current status: " + booking.getBookingStatus()
+            );
+        }
+
+        booking.setBookingStatus(BookingStatus.COMPLETED);
+        Booking saved = bookingRepository.save(booking);
+        logger.info("Booking {} completed successfully", bookingId);
+
+        return buildBookingResponse(saved);
+    }
+
+    /**
      * Helper method to build BookingResponse from Booking entity
      */
     private BookingResponse buildBookingResponse(Booking booking) {

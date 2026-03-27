@@ -2,6 +2,7 @@ package com.staynest.controller;
 
 import com.staynest.dto.request.HostResponseRequest;
 import com.staynest.dto.request.ReviewCreateRequest;
+import com.staynest.dto.response.BookingResponse;
 import com.staynest.dto.response.PagedResponse;
 import com.staynest.dto.response.ReviewCreateResponse;
 import com.staynest.entity.Booking;
@@ -101,10 +102,9 @@ public class ReviewController {
 
      * GET /api/v1/reviews/reviewable-bookings
      */
-    @GetMapping("/reviewable-bookings")
-    public ResponseEntity<List<Booking>> getReviewableBookings(Authentication authentication){
+    public ResponseEntity<List<BookingResponse>> getReviewableBookings(Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        List<Booking> bookings = reviewService.getReviewableBookings(user.getUserId());
+        List<BookingResponse> bookings = reviewService.getReviewableBookingResponses(user.getUserId());
         return ResponseEntity.ok(bookings);
     }
 

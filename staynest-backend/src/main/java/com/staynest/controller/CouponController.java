@@ -2,7 +2,6 @@ package com.staynest.controller;
 
 import com.staynest.dto.request.ApplyCouponRequest;
 import com.staynest.dto.request.CouponCreateRequest;
-import com.staynest.dto.response.ApiResponse;
 import com.staynest.dto.response.ApplyCouponResponse;
 import com.staynest.dto.response.CouponResponse;
 import com.staynest.entity.User;
@@ -11,7 +10,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 

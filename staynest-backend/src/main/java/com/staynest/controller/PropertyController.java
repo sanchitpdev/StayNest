@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -141,7 +140,7 @@ public class PropertyController {
 
     /**
      * Delete property
-     * Only the property owner can only  delete
+     * Only the property owner can only  delete.
      * DELETE /api/v1/properties/{propertyId}
      */
 
@@ -225,9 +224,6 @@ public class PropertyController {
      * Suspend a property — ADMIN only
      * PATCH /api/v1/properties/{propertyId}/suspend
      */
-    // Remove this import entirely if only used for suspend
-// import org.springframework.security.access.prepost.PreAuthorize;
-
     @PatchMapping("/{propertyId}/suspend")
     public ResponseEntity<PropertyCreateResponse> suspendProperty(
             @PathVariable UUID propertyId,

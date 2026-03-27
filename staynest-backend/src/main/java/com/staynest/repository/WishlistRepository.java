@@ -37,8 +37,6 @@ public interface WishlistRepository extends JpaRepository<Wishlist, UUID> {
             UUID propertyId
     );
 
-    UUID user(User user);
-
     //Whitelist of user in paginated format
     Page<Wishlist> findByUser_UserId(UUID userId, Pageable pageable);
 }

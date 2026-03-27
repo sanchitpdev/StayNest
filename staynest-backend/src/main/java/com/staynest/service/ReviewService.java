@@ -1,6 +1,7 @@
 package com.staynest.service;
 
 import com.staynest.dto.request.ReviewCreateRequest;
+import com.staynest.dto.response.BookingResponse;
 import com.staynest.dto.response.PagedResponse;
 import com.staynest.dto.response.ReviewCreateResponse;
 import com.staynest.entity.Booking;
@@ -185,6 +186,30 @@ public class ReviewService {
 
         logger.info("Host response added to review {}", reviewId);
         return buildReviewResponse(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookingResponse> getReviewableBookingResponses(UUID userId) {
+        List<Booking> bookings = bookingRepository.findReviewableBookings(userId, LocalDate.now());
+        return bookings.stream()
+                .map(this::buildSimpleBookingResponse)
+                .collect(Collectors.toList());
+    }
+
+    private BookingResponse buildSimpleBookingResponse(Booking booking) {
+        return BookingResponse.builder()
+                .bookingId(booking.getBookingId().toString())
+                .unitId(booking.getUnit().getUnitId().toString())
+                .unitName(booking.getUnit().getUnitName())
+                .propertyId(booking.getUnit().getProperty().getPropertyId().toString())
+                .propertyName(booking.getUnit().getProperty().getPropertyName())
+                .checkInDate(booking.getCheckInDate())
+                .checkOutDate(booking.getCheckOutDate())
+                .numGuests(booking.getNumGuests())
+                .totalPrice(booking.getTotalPrice())
+                .bookingStatus(booking.getBookingStatus())
+                .createdAt(booking.getCreatedAt())
+                .build();
     }
 
     /**
