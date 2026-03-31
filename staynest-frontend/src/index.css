@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: #222222;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+  input, select, textarea, button { font-family: inherit; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-hover transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply border border-staynest-dark text-staynest-dark px-6 py-3 rounded-lg font-semibold hover:bg-staynest-bg transition-all duration-200;
+  }
+  .btn-ghost {
+    @apply text-staynest-dark px-4 py-2 rounded-lg font-medium hover:bg-staynest-bg transition-all duration-200;
+  }
+  .input-base {
+    @apply w-full border border-staynest-light rounded-lg px-4 py-3 text-staynest-dark placeholder-staynest-gray focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all;
+  }
+  .card-hover {
+    @apply transition-transform duration-200 hover:-translate-y-1;
+  }
+  .section-title {
+    @apply text-2xl font-bold text-staynest-dark mb-6;
+  }
+  .divider { @apply border-t border-staynest-light my-6; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #999; }
+
+/* Date picker overrides */
+.react-datepicker { font-family: 'DM Sans', sans-serif !important; border: none !important; box-shadow: 0 6px 16px rgba(0,0,0,0.12) !important; border-radius: 16px !important; overflow: hidden; }
+.react-datepicker__header { background: white !important; border-bottom: 1px solid #ebebeb !important; }
+.react-datepicker__day--selected, .react-datepicker__day--in-range { background: #FF385C !important; color: white !important; border-radius: 50% !important; }
+.react-datepicker__day--in-selecting-range { background: #FFF1F2 !important; color: #FF385C !important; }
+.react-datepicker__day:hover { background: #f7f7f7 !important; border-radius: 50% !important; }

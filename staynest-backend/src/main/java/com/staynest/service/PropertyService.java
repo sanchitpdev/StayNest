@@ -212,7 +212,7 @@ public class PropertyService {
     public List<PropertyResponse> searchPropertiesByCity(String city){
         logger.info("Searching properties in city: {}",city);
 
-        List<Property> properties = propertyRepository.findByCityAndPropertyStatus(city, PropertyStatus.ACTIVE);
+        List<Property> properties = propertyRepository.findByCityIgnoreCaseAndPropertyStatus(city.trim(), PropertyStatus.ACTIVE);
         return properties.stream()
                 .map(this::buildPropertyResponse)
                 .collect(Collectors.toList());
@@ -438,7 +438,7 @@ public class PropertyService {
         logger.info("Searching properties in city: {} - page: {}, size: {}",city,page,size);
 
         Pageable pageable = PageRequest.of(page,size,Sort.by("createdAt").descending());
-        Page<Property> propertyPage = propertyRepository.findByCity(city,pageable);
+        Page<Property> propertyPage = propertyRepository.findByCityIgnoreCase(city.trim(),pageable);
         Page<PropertyResponse> responsePage = propertyPage.map(this::buildPropertyResponse);
 
         return PagedResponse.of(responsePage);

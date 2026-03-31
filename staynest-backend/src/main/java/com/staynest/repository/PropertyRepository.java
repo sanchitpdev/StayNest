@@ -16,61 +16,51 @@ import java.util.UUID;
 @Repository
 public interface PropertyRepository extends JpaRepository<Property, UUID> {
 
-    //Find  all property by host
+    // Find all properties by host
     List<Property> findByHost_UserId(UUID hostId);
 
-    //Find property by city
-    List<Property> findByCity(String city);
+    // Find property by city — CASE INSENSITIVE
+    List<Property> findByCityIgnoreCase(String city);
 
-    //find property by city and country
-    List<Property> findByCityAndCountry(String city,String country);
+    // Find property by city with pagination — CASE INSENSITIVE
+    Page<Property> findByCityIgnoreCase(String city, Pageable pageable);
 
-    //find property by type
+    // Find property by city and country — CASE INSENSITIVE
+    List<Property> findByCityIgnoreCaseAndCountryIgnoreCase(String city, String country);
+
+    // Find property by type
     List<Property> findByPropertyType(PropertyType propertyType);
 
-    //find property by city and type
-    List<Property> findByCityAndPropertyType(String city,PropertyType propertyType);
-
-    //Search property by name(partial name)
-    List<Property> findByPropertyNameContainingIgnoreCase(String name);
-
-    //Custom query : Find properties within a city at least one available unit
-    @Query("SELECT DISTINCT p FROM Property p " +
-            "JOIN p.units u " +
-            "WHERE p.city = :city AND u.isAvailable = true")
-    List<Property> findAvailablePropertiesByCity(@Param("city") String city);
-
-    //Count properties by host
-    long countByHost_UserId(UUID hostId);
-
-    /**
-     * Find all properties with pagination
-     */
-    Page<Property> findAll(Pageable pageable);
-
-    /**
-     * Find properties by city with pagination
-     */
-    Page<Property> findByCity(String city, Pageable pageable);
-
-    /**
-     * Find property by type with pagination
-     */
+    // Find property by type with pagination
     Page<Property> findByPropertyType(PropertyType propertyType, Pageable pageable);
 
-    /**
-     * Find properties by host with pagination
-     */
+    // Find property by city and type — CASE INSENSITIVE
+    List<Property> findByCityIgnoreCaseAndPropertyType(String city, PropertyType propertyType);
+
+    // Search property by name (partial match) — already case insensitive
+    List<Property> findByPropertyNameContainingIgnoreCase(String name);
+
+    // Available properties in a city — CASE INSENSITIVE using LOWER()
+    @Query("SELECT DISTINCT p FROM Property p " +
+            "JOIN p.units u " +
+            "WHERE LOWER(p.city) = LOWER(:city) AND u.isAvailable = true")
+    List<Property> findAvailablePropertiesByCity(@Param("city") String city);
+
+    // Count properties by host
+    long countByHost_UserId(UUID hostId);
+
+    // Find all properties with pagination
+    Page<Property> findAll(Pageable pageable);
+
+    // Find properties by host with pagination
     Page<Property> findByHost_UserId(UUID hostId, Pageable pageable);
 
-    /**
-     * Advanced search with multiple filters
-     */
+    // Advanced search with multiple filters — CASE INSENSITIVE using LOWER()
     @Query("SELECT DISTINCT p FROM Property p " +
             "LEFT JOIN p.units u " +
-            "WHERE (:city IS NULL OR p.city = :city) " +
-            "AND (:state IS NULL OR p.state = :state) " +
-            "AND (:country IS NULL OR p.country = :country) " +
+            "WHERE (:city IS NULL OR LOWER(p.city) = LOWER(:city)) " +
+            "AND (:state IS NULL OR LOWER(p.state) = LOWER(:state)) " +
+            "AND (:country IS NULL OR LOWER(p.country) = LOWER(:country)) " +
             "AND (:propertyType IS NULL OR p.propertyType = :propertyType) " +
             "AND (:minBedrooms IS NULL OR u.bedrooms >= :minBedrooms) " +
             "AND (:maxBedrooms IS NULL OR u.bedrooms <= :maxBedrooms) " +
@@ -86,9 +76,7 @@ public interface PropertyRepository extends JpaRepository<Property, UUID> {
             Pageable pageable
     );
 
-    /**
-     * Search properties with price range filter
-     */
+    // Search by price range
     @Query("SELECT DISTINCT p FROM Property p " +
             "LEFT JOIN p.units u " +
             "WHERE (:minPrice IS NULL OR u.basePrice >= :minPrice) " +
@@ -99,14 +87,11 @@ public interface PropertyRepository extends JpaRepository<Property, UUID> {
             Pageable pageable
     );
 
+    // Status-based queries
     List<Property> findByPropertyStatus(PropertyStatus propertyStatus);
 
-    List<Property> findByCityAndPropertyStatus(String city, PropertyStatus propertyStatus);
-
-    // Also add paginated version for consistency
     Page<Property> findByPropertyStatus(PropertyStatus propertyStatus, Pageable pageable);
 
-
-
-
+    // Status + city — CASE INSENSITIVE
+    List<Property> findByCityIgnoreCaseAndPropertyStatus(String city, PropertyStatus propertyStatus);
 }
