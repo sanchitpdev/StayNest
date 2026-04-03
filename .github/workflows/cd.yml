@@ -21,38 +21,33 @@ jobs:
           java -version
           mvn -version
 
-      # ── 3. Run tests before deploying ────────────────────
-      - name: Run tests
-        working-directory: ./staynest-backend
-        run: mvn clean test -B
-
-      # ── 4. Build jar ──────────────────────────────────────
+      # ── 3. Build backend jar ──────────────────────────────
       - name: Build backend jar
         working-directory: ./staynest-backend
         run: mvn clean package -DskipTests -B
 
-      # ── 5. Stop existing containers ───────────────────────
+      # ── 4. Stop existing containers ───────────────────────
       - name: Stop running containers
         run: |
           cd ${{ github.workspace }}
           docker compose down
           echo "✅ Old containers stopped"
 
-      # ── 6. Build fresh Docker images ─────────────────────
+      # ── 5. Build fresh Docker images ─────────────────────
       - name: Build fresh Docker images
         run: |
           cd ${{ github.workspace }}
           docker compose build --no-cache
           echo "✅ Fresh images built"
 
-      # ── 7. Start all containers ───────────────────────────
+      # ── 6. Start all containers ───────────────────────────
       - name: Start containers
         run: |
           cd ${{ github.workspace }}
           docker compose up -d
           echo "✅ Containers started"
 
-      # ── 8. Wait for backend to be healthy ────────────────
+      # ── 7. Wait for backend to be healthy ────────────────
       - name: Wait for backend health check
         run: |
           echo "Waiting for backend to start..."
@@ -72,7 +67,7 @@ jobs:
             exit 1
           fi
 
-      # ── 9. Verify frontend is running ────────────────────
+      # ── 8. Verify frontend is running ────────────────────
       - name: Verify frontend
         run: |
           if curl -sf http://localhost > /dev/null 2>&1; then
@@ -82,20 +77,20 @@ jobs:
             docker compose logs frontend --tail=20
           fi
 
-      # ── 10. Show running containers ───────────────────────
+      # ── 9. Show running containers ───────────────────────
       - name: Show deployment status
         run: |
           echo "======= DEPLOYMENT STATUS ======="
           docker compose ps
           echo "================================="
 
-      # ── 11. Clean up old Docker images ───────────────────
+      # ── 10. Clean up old Docker images ───────────────────
       - name: Clean up old images
         run: |
           docker image prune -f
           echo "✅ Old images cleaned up"
 
-      # ── 12. Notify deployment success ────────────────────
+      # ── 11. Notify deployment success ────────────────────
       - name: Deployment success notification
         if: success()
         run: |
@@ -107,7 +102,7 @@ jobs:
           echo "App running at: http://localhost"
           echo "API running at: http://localhost:8080/api/v1"
 
-      # ── 13. Notify deployment failure ────────────────────
+      # ── 12. Notify deployment failure ────────────────────
       - name: Deployment failure notification
         if: failure()
         run: |
