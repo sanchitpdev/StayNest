@@ -25,6 +25,7 @@ jobs:
         run: mvn clean package -DskipTests -B
 
       - name: Build Docker images
+        working-directory: StayNest
         run: docker compose build
 
       - name: Verify Docker images
