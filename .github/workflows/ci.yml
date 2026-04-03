@@ -21,7 +21,7 @@ jobs:
           mvn -version
 
       - name: Build backend jar
-        working-directory: ./staynest-backend
+        working-directory: StayNest
         run: mvn clean package -DskipTests -B
 
       - name: Build Docker images
