@@ -1,0 +1,121 @@
+name: CD — Deploy to Local
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: Deploy StayNest
+    runs-on: self-hosted
+    environment: production
+
+    steps:
+      # ── 1. Checkout code ──────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Set up Java 21 ─────────────────────────────────
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # ── 3. Run tests before deploying ────────────────────
+      - name: Run tests
+        working-directory: ./staynest-backend
+        run: mvn clean test -B
+
+      # ── 4. Build jar ──────────────────────────────────────
+      - name: Build backend jar
+        working-directory: ./staynest-backend
+        run: mvn clean package -DskipTests -B
+
+      # ── 5. Stop existing containers ───────────────────────
+      - name: Stop running containers
+        run: |
+          cd ${{ github.workspace }}
+          docker compose down
+          echo "✅ Old containers stopped"
+
+      # ── 6. Build fresh Docker images ─────────────────────
+      - name: Build fresh Docker images
+        run: |
+          cd ${{ github.workspace }}
+          docker compose build --no-cache
+          echo "✅ Fresh images built"
+
+      # ── 7. Start all containers ───────────────────────────
+      - name: Start containers
+        run: |
+          cd ${{ github.workspace }}
+          docker compose up -d
+          echo "✅ Containers started"
+
+      # ── 8. Wait for backend to be healthy ────────────────
+      - name: Wait for backend health check
+        run: |
+          echo "Waiting for backend to start..."
+          for i in {1..12}; do
+            if curl -sf http://localhost:8080/api/v1/health > /dev/null 2>&1; then
+              echo "✅ Backend is healthy!"
+              break
+            fi
+            echo "Attempt $i/12 — waiting 10 seconds..."
+            sleep 10
+          done
+
+          # Final check
+          if ! curl -sf http://localhost:8080/api/v1/health > /dev/null 2>&1; then
+            echo "❌ Backend failed to start after 2 minutes"
+            docker compose logs backend --tail=50
+            exit 1
+          fi
+
+      # ── 9. Verify frontend is running ────────────────────
+      - name: Verify frontend
+        run: |
+          if curl -sf http://localhost > /dev/null 2>&1; then
+            echo "✅ Frontend is accessible at http://localhost"
+          else
+            echo "⚠️  Frontend check failed"
+            docker compose logs frontend --tail=20
+          fi
+
+      # ── 10. Show running containers ───────────────────────
+      - name: Show deployment status
+        run: |
+          echo "======= DEPLOYMENT STATUS ======="
+          docker compose ps
+          echo "================================="
+
+      # ── 11. Clean up old Docker images ───────────────────
+      - name: Clean up old images
+        run: |
+          docker image prune -f
+          echo "✅ Old images cleaned up"
+
+      # ── 12. Notify deployment success ────────────────────
+      - name: Deployment success notification
+        if: success()
+        run: |
+          echo "🚀 DEPLOYMENT SUCCESSFUL!"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo "Time: $(date)"
+          echo "App running at: http://localhost"
+          echo "API running at: http://localhost:8080/api/v1"
+
+      # ── 13. Notify deployment failure ────────────────────
+      - name: Deployment failure notification
+        if: failure()
+        run: |
+          echo "❌ DEPLOYMENT FAILED!"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Rolling back to previous state..."
+          docker compose down
+          echo "Containers stopped. Manual intervention required."

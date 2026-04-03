@@ -1,0 +1,62 @@
+name: CI — Build & Test
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    name: Run Tests & Build Docker Images
+    runs-on: self-hosted
+
+    steps:
+      # ── 1. Checkout code ──────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Set up Java 21 ─────────────────────────────────
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      # ── 3. Run Maven tests ────────────────────────────────
+      - name: Run backend tests
+        working-directory: ./staynest-backend
+        run: mvn clean test -B
+        continue-on-error: false
+
+      # ── 4. Build backend jar ──────────────────────────────
+      - name: Build backend jar
+        working-directory: ./staynest-backend
+        run: mvn clean package -DskipTests -B
+
+      # ── 5. Build Docker images ────────────────────────────
+      - name: Build Docker images
+        run: docker compose build
+
+      # ── 6. Verify images were created ────────────────────
+      - name: Verify Docker images
+        run: |
+          docker image ls | grep staynest
+          echo "✅ Docker images built successfully"
+
+      # ── 7. Notify on success ──────────────────────────────
+      - name: Notify success
+        if: success()
+        run: |
+          echo "✅ CI passed on branch ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+
+      # ── 8. Notify on failure ──────────────────────────────
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ CI FAILED on branch ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Check the logs above for details"
