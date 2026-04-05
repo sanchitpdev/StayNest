@@ -10,44 +10,38 @@ jobs:
     runs-on: self-hosted
     environment: production
 
+    defaults:
+      run:
+        working-directory: /home/sanchit/Projects/StayNest_All/StayNest
+
     steps:
-      # ── 1. Checkout code ──────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Verify Java 21 is available ───────────────────
       - name: Verify Java
         run: |
           java -version
           mvn -version
 
-      # ── 3. Build backend jar ──────────────────────────────
       - name: Build backend jar
-        working-directory: ./staynest-backend
+        working-directory: /home/sanchit/Projects/StayNest_All/StayNest/staynest-backend
         run: mvn clean package -DskipTests -B
 
-      # ── 4. Stop existing containers ───────────────────────
       - name: Stop running containers
         run: |
-          cd ${{ github.workspace }}
           docker compose down
           echo "✅ Old containers stopped"
 
-      # ── 5. Build fresh Docker images ─────────────────────
       - name: Build fresh Docker images
         run: |
-          cd ${{ github.workspace }}
           docker compose build --no-cache
           echo "✅ Fresh images built"
 
-      # ── 6. Start all containers ───────────────────────────
       - name: Start containers
         run: |
-          cd ${{ github.workspace }}
           docker compose up -d
           echo "✅ Containers started"
 
-      # ── 7. Wait for backend to be healthy ────────────────
       - name: Wait for backend health check
         run: |
           echo "Waiting for backend to start..."
@@ -59,38 +53,32 @@ jobs:
             echo "Attempt $i/12 — waiting 10 seconds..."
             sleep 10
           done
-
-          # Final check
           if ! curl -sf http://localhost:8080/api/v1/health > /dev/null 2>&1; then
             echo "❌ Backend failed to start after 2 minutes"
             docker compose logs backend --tail=50
             exit 1
           fi
 
-      # ── 8. Verify frontend is running ────────────────────
       - name: Verify frontend
         run: |
           if curl -sf http://localhost > /dev/null 2>&1; then
             echo "✅ Frontend is accessible at http://localhost"
           else
-            echo "⚠️  Frontend check failed"
+            echo "⚠️ Frontend check failed"
             docker compose logs frontend --tail=20
           fi
 
-      # ── 9. Show running containers ───────────────────────
       - name: Show deployment status
         run: |
           echo "======= DEPLOYMENT STATUS ======="
           docker compose ps
           echo "================================="
 
-      # ── 10. Clean up old Docker images ───────────────────
       - name: Clean up old images
         run: |
           docker image prune -f
           echo "✅ Old images cleaned up"
 
-      # ── 11. Notify deployment success ────────────────────
       - name: Deployment success notification
         if: success()
         run: |
@@ -102,13 +90,11 @@ jobs:
           echo "App running at: http://localhost"
           echo "API running at: http://localhost:8080/api/v1"
 
-      # ── 12. Notify deployment failure ────────────────────
       - name: Deployment failure notification
         if: failure()
         run: |
           echo "❌ DEPLOYMENT FAILED!"
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
-          echo "Rolling back to previous state..."
-          docker compose down
+          docker compose down || true
           echo "Containers stopped. Manual intervention required."
