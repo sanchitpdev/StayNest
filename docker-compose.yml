@@ -1,0 +1,67 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: staynest_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       staynestdb
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"       # ← changed from 5432 to 5433
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d staynestdb"]
+      interval: 10s
+      timeout:  5s
+      retries:  5
+    networks:
+      - staynest_network
+
+  backend:
+    build:
+      context: ./staynest-backend
+      dockerfile: Dockerfile
+    container_name: staynest_backend
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "9090:8080"       # ← changed from 8080 to 9090
+    volumes:
+      - backend_logs:/app/logs
+    networks:
+      - staynest_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/api/v1/health || exit 1"]
+      interval: 30s
+      timeout:  10s
+      retries:  10
+      start_period: 120s
+
+  frontend:
+    build:
+      context: ./staynest-frontend
+      dockerfile: Dockerfile
+    container_name: staynest_frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8088:80"         # ← changed from 80 to 8088
+    networks:
+      - staynest_network
+
+volumes:
+  postgres_data:
+  backend_logs:
+
+networks:
+  staynest_network:
+    driver: bridge

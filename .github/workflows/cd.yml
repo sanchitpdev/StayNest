@@ -46,14 +46,14 @@ jobs:
         run: |
           echo "Waiting for backend to start..."
           for i in {1..12}; do
-            if curl -sf http://localhost:8080/api/v1/health > /dev/null 2>&1; then
+            if curl -sf http://localhost:9090/api/v1/health > /dev/null 2>&1; then
               echo "✅ Backend is healthy!"
               break
             fi
             echo "Attempt $i/12 — waiting 10 seconds..."
             sleep 10
           done
-          if ! curl -sf http://localhost:8080/api/v1/health > /dev/null 2>&1; then
+          if ! curl -sf http://localhost:9090/api/v1/health > /dev/null 2>&1; then
             echo "❌ Backend failed to start after 2 minutes"
             docker compose logs backend --tail=50
             exit 1
@@ -61,8 +61,8 @@ jobs:
 
       - name: Verify frontend
         run: |
-          if curl -sf http://localhost > /dev/null 2>&1; then
-            echo "✅ Frontend is accessible at http://localhost"
+          if curl -sf http://localhost:8088 > /dev/null 2>&1; then
+            echo "✅ Frontend is accessible at http://localhost:8088"
           else
             echo "⚠️ Frontend check failed"
             docker compose logs frontend --tail=20
@@ -87,8 +87,8 @@ jobs:
           echo "Commit: ${{ github.sha }}"
           echo "Author: ${{ github.actor }}"
           echo "Time: $(date)"
-          echo "App running at: http://localhost"
-          echo "API running at: http://localhost:8080/api/v1"
+          echo "App running at: http://localhost:8088"
+          echo "API running at: http://localhost:9090/api/v1"
 
       - name: Deployment failure notification
         if: failure()
