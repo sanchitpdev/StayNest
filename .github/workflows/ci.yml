@@ -11,6 +11,10 @@ jobs:
     name: Build & Verify
     runs-on: self-hosted
 
+    defaults:
+      run:
+        working-directory: /home/sanchit/Projects/StayNest_All/StayNest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,11 +25,10 @@ jobs:
           mvn -version
 
       - name: Build backend jar
-        working-directory: StayNest
+        working-directory: /home/sanchit/Projects/StayNest_All/StayNest/staynest-backend
         run: mvn clean package -DskipTests -B
 
       - name: Build Docker images
-        working-directory: StayNest
         run: docker compose build
 
       - name: Verify Docker images
