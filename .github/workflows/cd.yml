@@ -31,6 +31,11 @@ jobs:
           docker compose down
           echo "✅ Old containers stopped"
 
+      - name: Clear Docker BuildKit cache
+        run: |
+          docker builder prune -af
+          echo "✅ BuildKit cache cleared"
+
       - name: Build fresh Docker images
         run: |
           docker compose build --no-cache
